@@ -6,6 +6,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -24,6 +25,7 @@ import {
 } from "react-icons/fa";
 import { TbHandStop } from "react-icons/tb";
 import BarChart from "@/components/ui/charts/BarChart";
+import Pagination from "@/components/tables/Pagination";
 
 export default function Home() {
   const [counts, setCounts] = useState({
@@ -52,6 +54,9 @@ export default function Home() {
 
   const [Business_Accounts_List, setBusiness_Accounts_List] = useState([]);
 
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+
   const [baccountsLoader, setBAccountsLoader] = useState(true);
   const [countsLoader, setCountsLoader] = useState(true);
 
@@ -59,11 +64,12 @@ export default function Home() {
     setBAccountsLoader(true);
     try {
       const {
-        data: { data: businessUsers },
+        data: { data },
       } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/admin/business_accounts`,
+        `${process.env.NEXT_PUBLIC_API_URL}/users/admin/business_accounts`, { params: { page: currentPage } }
       );
-      setBusiness_Accounts_List(businessUsers);
+      setBusiness_Accounts_List(data.rows);
+      setTotalPages(data.total_pages)
     } catch (err) {
       console.error(err);
     } finally {
@@ -96,8 +102,11 @@ export default function Home() {
 
   useEffect(() => {
     fetchAllCounts();
-    fetchBusinessUsers();
   }, []);
+
+  useEffect(() => {
+    fetchBusinessUsers();
+  }, [currentPage]);
 
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
@@ -219,9 +228,9 @@ export default function Home() {
                     {
                       name: "Events",
                       data: [
-                        eventCounts.total_events,
-                        eventCounts.passed_events,
-                        courseCounts.open_events,
+                        eventCounts.total_events || 0,
+                        eventCounts.passed_events || 0,
+                        courseCounts.open_events || 0,
                       ],
                     },
                   ]}
@@ -348,6 +357,21 @@ export default function Home() {
               </TableRow>
             ))}
           </TableBody>
+          {(!baccountsLoader && Business_Accounts_List.length > 0) && (
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={10}>
+                  <div className="flex justify-center w-full">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          )}
         </Table>
       </div>
     </div>

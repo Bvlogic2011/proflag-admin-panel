@@ -1,21 +1,26 @@
-import "./globals.css";
-import { Outfit } from "next/font/google";
-
-import { SidebarProvider } from "@/context/SidebarContext";
-import { ThemeProvider } from "@/context/ThemeContext";
+'use client';
+import './globals.css';
+import { Outfit } from 'next/font/google';
+import { SidebarProvider } from '@/context/SidebarContext';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { SessionProvider } from 'next-auth/react';
 
 const outfit = Outfit({
-  subsets: ["latin"],
+    subsets: ["latin"],
 });
 
 export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body className={`${outfit.className} dark:bg-gray-900`}>
-        <ThemeProvider>
-          <SidebarProvider>{children}</SidebarProvider>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <body className={`${outfit.className} dark:bg-gray-900`}>
+                <SessionProvider>
+                    <ThemeProvider>
+                        <SidebarProvider>
+                            {children}
+                        </SidebarProvider>
+                    </ThemeProvider>
+                </SessionProvider>
+            </body>
+        </html>
+    );
 }

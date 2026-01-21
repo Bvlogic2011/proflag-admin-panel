@@ -5,12 +5,14 @@ import {
     Table,
     TableBody,
     TableCell,
+    TableFooter,
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
 import axios from 'axios';
 import { BoxIconLine, GroupIcon, UserIcon } from '@/icons';
 import Image from 'next/image';
+import Pagination from '@/components/tables/Pagination';
 
 export default function AccountsPage() {
 
@@ -23,6 +25,9 @@ export default function AccountsPage() {
 
     const [Accounts_List, setAccounts_List] = useState([]);
 
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+
     const [accountsLoader, setAccountsLoader] = useState(true);
     const [countsLoader, setCountsLoader] = useState(true);
 
@@ -30,11 +35,12 @@ export default function AccountsPage() {
         setAccountsLoader(true);
         try {
             const {
-                data: { data: businessUsers },
+                data: { data },
             } = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/users/admin/accounts`,
+                `${process.env.NEXT_PUBLIC_API_URL}/users/admin/accounts`, { params: { page: currentPage } }
             );
-            setAccounts_List(businessUsers);
+            setAccounts_List(data.rows);
+            setTotalPages(data.total_pages)
         } catch (err) {
             console.error(err);
         } finally {
@@ -56,9 +62,12 @@ export default function AccountsPage() {
     };
 
     useEffect(() => {
-        fetchAccountsList();
         fetchAllCounts()
     }, []);
+
+    useEffect(() => {
+        fetchAccountsList();
+    }, [currentPage]);
 
     return (
         <div className="grid grid-cols-12 gap-4 md:gap-6">
@@ -142,6 +151,21 @@ export default function AccountsPage() {
                             </TableRow>
                         ))}
                     </TableBody>
+                    {(!accountsLoader && Accounts_List.length > 0) && (
+                        <TableFooter>
+                            <TableRow>
+                                <TableCell colSpan={10}>
+                                    <div className="flex justify-center w-full">
+                                        <Pagination
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={setCurrentPage}
+                                        />
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        </TableFooter>
+                    )}
                 </Table>
             </div>
         </div>

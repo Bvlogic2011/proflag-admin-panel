@@ -24,12 +24,12 @@ const navItems = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    path: "/",
+    path: "/admin/dashboard",
   },
   {
     icon: <UserIcon />,
     name: "Accounts",
-    path: "/accounts",
+    path: "/admin/accounts",
   },
   // {
   //   icon: <GridIcon />,

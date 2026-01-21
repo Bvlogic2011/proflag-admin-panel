@@ -3,11 +3,14 @@ import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useSidebar } from "@/context/SidebarContext";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 
 const AppHeader = () => {
+  const { data: session, status } = useSession();
+
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
@@ -163,8 +166,9 @@ const AppHeader = () => {
             <ThemeToggleButton />
             {/* <NotificationDropdown /> */}
           </div>
-          <UserDropdown />
-
+          {(status !== "loading" && session) && (
+            <UserDropdown />
+          )}
         </div>
       </div>
     </header>
