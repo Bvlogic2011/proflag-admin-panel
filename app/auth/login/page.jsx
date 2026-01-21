@@ -35,6 +35,8 @@ export default function SignIn() {
       callbackUrl: "/admin/dashboard",
     });
 
+    console.warn(res)
+
     setLoader(false);
 
     if (res?.error) {
