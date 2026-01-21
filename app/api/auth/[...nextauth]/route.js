@@ -23,7 +23,7 @@ export const authOptions = {
 
                     const data = res.data.data;
 
-                    if (!data?.token?.access_token) throw "No Token Provided";
+                    if (!data?.token?.access_token) throw new Error("No Token Provided");
 
                     return {
                         id: data.user.uuid,
