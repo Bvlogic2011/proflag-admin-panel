@@ -13,17 +13,29 @@ import axios from 'axios';
 import { BoxIconLine, GroupIcon, UserIcon } from '@/icons';
 import Image from 'next/image';
 import Pagination from '@/components/tables/Pagination';
+import Label from '@/components/form/Label';
+import Input from '@/components/form/input/InputField';
+import Select from '@/components/form/Select';
+import Button from '@/components/ui/button/Button';
+import useDebounce from '@/hooks/useDebounce';
 
 export default function AccountsPage() {
-
     const [counts, setCounts] = useState({
         total_users: 0,
         simple_users: 0,
         business_users: 0,
     });
 
-
     const [Accounts_List, setAccounts_List] = useState([]);
+
+    const [filters, setFilters] = useState({
+        keyword: "",
+        type: "",
+        status: "",
+    });
+
+    const debouncedKeyword = useDebounce(filters.keyword, 500);
+    const isFiltersApplied = !!debouncedKeyword || !!filters.type || !!filters.status
 
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
@@ -37,7 +49,15 @@ export default function AccountsPage() {
             const {
                 data: { data },
             } = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/users/admin/accounts`, { params: { page: currentPage } }
+                `${process.env.NEXT_PUBLIC_API_URL}/users/admin/accounts`,
+                {
+                    params: {
+                        page: isFiltersApplied ? 1 : currentPage,
+                        keyword: debouncedKeyword || undefined,
+                        type: filters.type || undefined,
+                        status: filters.status || undefined,
+                    },
+                }
             );
             setAccounts_List(data.rows);
             setTotalPages(data.total_pages)
@@ -67,7 +87,12 @@ export default function AccountsPage() {
 
     useEffect(() => {
         fetchAccountsList();
-    }, [currentPage]);
+    }, [
+        currentPage,
+        debouncedKeyword,
+        filters.type,
+        filters.status,
+    ]);
 
     return (
         <div className="grid grid-cols-12 gap-4 md:gap-6">
@@ -108,6 +133,67 @@ export default function AccountsPage() {
                                 {countsLoader ? "-" : counts.simple_users}
                             </h4>
                         </div>
+                    </div>
+                </div>
+                <div className="border p-3 rounded-xl mb-4 flex flex-col sm:flex-row sm:items-end gap-4 bg-white">
+                    <div className="flex-1">
+                        <Label>Keyword</Label>
+                        <Input
+                            placeholder="Name / Email / Phone"
+                            value={filters.keyword}
+                            onChange={(e) =>
+                                setFilters(prev => ({ ...prev, keyword: e.target.value }))
+                            }
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <Label>Account Type</Label>
+                        <Select
+                            placeholder="All"
+                            options={[
+                                { label: "User", value: "user" },
+                                { label: "Business", value: "business" },
+                            ]}
+                            defaultValue={filters.type}
+                            onChange={(e) =>
+                                setFilters(prev => ({ ...prev, type: e }))
+                            }
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <Label>Status</Label>
+                        <Select
+                            placeholder="All"
+                            options={[
+                                { label: "Active", value: "active" },
+                                { label: "Inactive", value: "inactive" },
+                            ]}
+                            defaultValue={filters.status}
+                            onChange={(e) =>
+                                setFilters(prev => ({ ...prev, status: e }))
+                            }
+                        />
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                                setFilters({ keyword: "", type: "", status: "" });
+                                setCurrentPage(1);
+                            }}
+                        >
+                            Clear
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => {
+                                setCurrentPage(1);
+                                fetchAccountsList();
+                            }}
+                        >
+                            Search
+                        </Button>
                     </div>
                 </div>
                 <Table>

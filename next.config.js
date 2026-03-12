@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["picsum.photos", 'proflag-dev.s3.eu-north-1.amazonaws.com'],
+    domains: ["picsum.photos", 'proflag-dev.s3.eu-north-1.amazonaws.com', 'lh3.googleusercontent.com'],
   },
   webpack(config) {
     config.module.rules.push({
