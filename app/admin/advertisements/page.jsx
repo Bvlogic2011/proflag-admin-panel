@@ -17,12 +17,12 @@ export default function Advertisements_List() {
     const [Advertisements_List, setAdvertisements_List] = useState([])
 
     const [Ad_Id, setAd_Id] = useState('')
-    const [User_Id, setUser_Id] = useState('0fe2fda6-2779-4e83-a5ee-4d65a558a355')
-    const [Title, setTitle] = useState('Summer Sale Campaign')
-    const [Content, setContent] = useState('Get up to 50% off on all summer clothing. Limited time offer!')
+    const [User_Id, setUser_Id] = useState('')
+    const [Title, setTitle] = useState('')
+    const [Content, setContent] = useState('')
     const [Attachment, setAttachment] = useState(null)
-    const [Ad_Type, setAd_Type] = useState('banner')
-    const [Ad_Link, setAd_Link] = useState('https://example.com/banner/summer-sale.jpg')
+    const [Ad_Type, setAd_Type] = useState('')
+    const [Ad_Link, setAd_Link] = useState('')
     const [Target_Audiance, setTarget_Audiance] = useState('all')
     const [Start_Date_Time, setStart_Date_Time] = useState(new Date())
     const [End_Date_Time, setEnd_Date_Time] = useState(new Date())
@@ -50,7 +50,7 @@ export default function Advertisements_List() {
     const Fetch_Advertisements_List = async () => {
         try {
             setAdsLoader(true)
-            const { data } = await axios.get("http://192.168.10.3:8000/api/users/advertisements/all")
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/advertisements/all`)
             setAdvertisements_List(data?.data || [])
         } catch (error) {
 
@@ -67,7 +67,7 @@ export default function Advertisements_List() {
 
         try {
             setUser_Search_Loader(true)
-            const { data } = await axios.get('http://192.168.10.3:8000/api/users/search/autocomplete', {
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/search/autocomplete`, {
                 params: {
                     q: query,
                     limit: 10,
@@ -92,7 +92,7 @@ export default function Advertisements_List() {
         } else {
             try {
                 setSaveLoader(true)
-                await axios.post(`http://192.168.10.3:8000/api/users/advertisement/create`, {
+                await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/advertisement/create`, {
                     user_id: User_Id,
                     title: Title,
                     content: Content,
@@ -126,7 +126,7 @@ export default function Advertisements_List() {
         } else {
             try {
                 setSaveLoader(true)
-                await axios.put(`http://192.168.10.3:8000/api/users/advertisements/${Ad_Id}`, {
+                await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/users/advertisements/${Ad_Id}`, {
                     user_id: User_Id,
                     title: Title,
                     content: Content,
@@ -153,7 +153,7 @@ export default function Advertisements_List() {
     const Delete_Advertisement_By_Id = async () => {
         try {
             setDeleteLoader(true)
-            await axios.delete(`http://192.168.10.3:8000/api/users/advertisements/${Delete_Ad_Id}`)
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/users/advertisements/${Delete_Ad_Id}`)
             await Fetch_Advertisements_List()
             setDeleteAdView(false)
         } catch (error) {
