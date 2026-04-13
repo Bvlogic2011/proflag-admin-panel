@@ -4,7 +4,7 @@ const Pagination = ({
   onPageChange,
 }) => {
   const pagesAroundCurrent = Array.from(
-    { length: Math.min(3, totalPages) },
+    { length: Math.min(2, totalPages) },
     (_, i) => i + Math.max(currentPage - 1, 1)
   );
 
