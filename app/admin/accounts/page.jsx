@@ -43,7 +43,7 @@ export default function AccountsPage() {
     const [accountsLoader, setAccountsLoader] = useState(true);
     const [countsLoader, setCountsLoader] = useState(true);
 
-    const fetchAccountsList = async () => {
+    const fetchAccountsList = async (page = currentPage) => {
         setAccountsLoader(true);
         try {
             const {
@@ -52,7 +52,7 @@ export default function AccountsPage() {
                 `${process.env.NEXT_PUBLIC_API_URL}/users/admin/accounts`,
                 {
                     params: {
-                        page: isFiltersApplied ? 1 : currentPage,
+                        page: page,
                         keyword: debouncedKeyword || undefined,
                         type: filters.type || undefined,
                         status: filters.status || undefined,
@@ -86,7 +86,7 @@ export default function AccountsPage() {
     }, []);
 
     useEffect(() => {
-        fetchAccountsList();
+        fetchAccountsList(currentPage);
     }, [
         currentPage,
         debouncedKeyword,
@@ -140,7 +140,7 @@ export default function AccountsPage() {
                         <Label>Keyword</Label>
                         <Input
                             placeholder="Name / Email / Phone"
-                            value={filters.keyword}
+                            defaultValue={filters.keyword}
                             onChange={(e) =>
                                 setFilters(prev => ({ ...prev, keyword: e.target.value }))
                             }

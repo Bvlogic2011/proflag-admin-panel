@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Select = ({
   options,
@@ -15,6 +15,10 @@ const Select = ({
     setSelectedValue(value);
     onChange(value);
   };
+
+  useEffect(() => {
+    setSelectedValue(defaultValue)
+  }, [defaultValue]);
 
   return (
     <select
